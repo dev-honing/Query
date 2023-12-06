@@ -11,6 +11,13 @@ app.get('/', (req, res) => {
   res.sendFile(indexPath);
 });
 
+// 
+app.get('/search', (req, res) => {
+  const inputString = req.query.inputString;
+  console.log(`사용자가 이동한 URL: http://localhost:${port}/search?inputString=${inputString}`);
+  res.send(`검색어: ${inputString}`);
+})
+
 // 서버를 지정한 포트로 시작
 app.listen(port, () => {
   console.log(`서버 ON: http://localhost:${port}`);
