@@ -2,17 +2,15 @@
 
 const express = require('express');
 const path = require('path');
-const fs = require('fs/promises'); // Node.js에서 제공하는 Promise 기반의 파일 시스템 모듈
+const fs = require('fs/promises');
 const app = express();
 const port = 3000;
 
-// 루트 경로에 대한 요청 핸들러
 app.get('/', (req, res) => {
   const indexPath = path.join(__dirname, 'index.html');
   res.sendFile(indexPath);
 });
 
-// /search 경로에 대한 요청 핸들러
 app.get('/search', async (req, res) => {
   const inputString = req.query.textBox;
   const modifiedURL = `http://localhost:${port}/search?textBox=${inputString}`;
@@ -21,6 +19,9 @@ app.get('/search', async (req, res) => {
     // txt 파일에 검색어 저장
     await fs.appendFile('searchHistory.txt', `${inputString}\n`);
     console.log('검색어가 파일에 저장되었습니다.');
+
+    // JSON 파일에 데이터 저장
+    await saveToJSON({ searchQuery: inputString });
 
     // 응답 보내기(서버 콘솔)
     res.send(`검색어: ${inputString}`);
@@ -52,15 +53,13 @@ async function saveToJSON(data) {
     // 파일에 새로운 데이터를 씁니다.
     await fs.writeFile(filePath, JSON.stringify(existingData, null, 2));
 
-    console.log('데이터가 JSON 파일에 저장됨.');
+    console.log('데이터가 JSON 파일에 저장되었습니다.');
   } catch (writeError) {
     console.error('JSON 파일에 데이터를 저장하는 중 오류 발생:', writeError);
     throw writeError;
   }
 }
 
-
-// 서버를 지정한 포트로 시작
 app.listen(port, () => {
   console.log(`서버 ON: http://localhost:${port}`);
 });
