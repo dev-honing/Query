@@ -33,6 +33,32 @@ app.get('/search', async (req, res) => {
   }
 });
 
+// JSON 파일에 데이터를 저장하는 함수
+async function saveToJSON(data) {
+  const filePath = 'userMsg.json';
+
+  try {
+    // 파일을 읽어온 후 기존 데이터에 새로운 데이터 추가
+    let existingData = [];
+    try {
+      const fileContent = await fs.readFile(filePath, 'utf-8');
+      existingData = JSON.parse(fileContent);
+    } catch (readError) {
+      // 파일이 존재하지 않을 경우 무시
+    }
+
+    existingData.push(data);
+
+    // 파일에 새로운 데이터를 씁니다.
+    await fs.writeFile(filePath, JSON.stringify(existingData, null, 2));
+
+    console.log('데이터가 JSON 파일에 저장됨.');
+  } catch (writeError) {
+    console.error('JSON 파일에 데이터를 저장하는 중 오류 발생:', writeError);
+    throw writeError;
+  }
+}
+
 
 // 서버를 지정한 포트로 시작
 app.listen(port, () => {
